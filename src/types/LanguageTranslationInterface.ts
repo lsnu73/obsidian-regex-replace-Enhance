@@ -1,7 +1,7 @@
 /**
  * 语言包需要实现此接口，防止遗漏某些字段
  */
-export interface LanguageInterface {
+interface LanguageTranslationInterface {
   modalTitle: string;
   findLabel: string;
   replaceLabel: string;
@@ -25,4 +25,8 @@ export interface LanguageInterface {
   prefillFindDesc: string;
   processTabName: string;
   processTabDesc: string;
+  languageName: string;
+  languageDesc: string;
+
 }
+export default LanguageTranslationInterface 

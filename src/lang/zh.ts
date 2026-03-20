@@ -1,6 +1,6 @@
-import { LanguageInterface } from "./LanguageInterface";
+import LanguageTranslationInterface from "../types/LanguageTranslationInterface";
 
-const zh: LanguageInterface = {
+const zh: LanguageTranslationInterface = {
   "modalTitle": "正则表达式查找/替换",
   "findLabel": "查找：",
   "replaceLabel": "替换：",
@@ -23,6 +23,8 @@ const zh: LanguageInterface = {
   "prefillFindName": "预填查找字段",
   "prefillFindDesc": "将当前选中的文本（如果有）复制到'查找'文本字段中。此设置仅在选择内容不包含换行符时应用",
   "processTabName": "将\\t处理为制表符",
-  "processTabDesc": "当在替换字段中使用'\\t'时，将相应插入'制表符'"
+  "processTabDesc": "当在替换字段中使用'\\t'时，将相应插入'制表符'",
+  "languageName": "语言",
+  "languageDesc": "选择插件的语言，影响插件的界面和功能"
 }
 export default zh;

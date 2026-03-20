@@ -10,19 +10,9 @@ import {
 	PluginSettingTab,
 	Setting
 } from 'obsidian';
-import { getLanguage, languageType } from './lang';
+import { getLanguage, languageType, getLanguageOptions } from './lang';
 
-interface RfrPluginSettings {
-	findText: string;
-	replaceText: string;
-	useRegEx: boolean;
-	selOnly: boolean;
-	caseInsensitive: boolean;
-	processLineBreak: boolean;
-	processTab: boolean;
-	prefillFind: boolean;
-	language: languageType;
-}
+
 
 const DEFAULT_SETTINGS: RfrPluginSettings = {
 	findText: '',
@@ -33,7 +23,7 @@ const DEFAULT_SETTINGS: RfrPluginSettings = {
 	processLineBreak: false,
 	processTab: false,
 	prefillFind: false,
-	language: 'zh'
+	language: languageType.zh
 }
 
 // logThreshold: 0 ... only error messages
@@ -346,21 +336,23 @@ class RegexFindReplaceSettingTab extends PluginSettingTab {
 
 		containerEl.createEl('h4', { text: currentLanguage.generalSettingsTitle });
 
-		// Add language selection
+		// 设置语言
+		const languageOptions = getLanguageOptions();
 		new Setting(containerEl)
-			.setName('Language')
-			.setDesc('Select the language for the plugin')
-			.addDropdown(dropdown => dropdown
-				.addOption('en', 'English')
-				.addOption('zh', '中文')
-				.setValue(this.plugin.settings.language)
-				.onChange(async (value) => {
-					logger('Settings update: language: ' + value);
-					this.plugin.settings.language = value as languageType;
-					await this.plugin.saveSettings();
-					// Refresh settings tab to update language
-					this.display();
-				}));
+			.setName(currentLanguage.languageName)
+			.setDesc(currentLanguage.languageDesc)
+			.addDropdown(dropdown => {
+				languageOptions.forEach(opt => {
+					dropdown.addOption(opt.code, opt.name);
+				});
+				dropdown.setValue(this.plugin.settings.language)
+					.onChange(async (value) => {
+						logger('Settings update: language: ' + value);
+						this.plugin.settings.language = value as languageType;
+						await this.plugin.saveSettings();
+						this.display();
+					});
+			});
 
 		new Setting(containerEl)
 			.setName(currentLanguage.processLineBreakName)

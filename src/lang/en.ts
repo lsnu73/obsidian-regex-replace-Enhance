@@ -1,5 +1,5 @@
-import { LanguageInterface } from "./LanguageInterface";
-const en: LanguageInterface = {
+import LanguageTranslationInterface from "../types/LanguageTranslationInterface";
+const en: LanguageTranslationInterface = {
     modalTitle: "Regex Find/Replace Enhance",
     findLabel: "Find:",
     replaceLabel: "Replace:",
@@ -22,6 +22,8 @@ const en: LanguageInterface = {
     prefillFindName: "Prefill Find Field",
     prefillFindDesc: "Copy the currently selected text (if any) into the 'Find' text field. This setting is only applied if the selection does not contain linebreaks",
     processTabName: "Process \\t as tab",
-    processTabDesc: "When '\\t' is used in the replace field, a 'tab' will be inserted accordingly"
+    processTabDesc: "When '\\t' is used in the replace field, a 'tab' will be inserted accordingly",
+    languageName: "Language",
+    languageDesc: "Select the language for the plugin"
 }
 export default en;
