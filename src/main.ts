@@ -126,6 +126,29 @@ class FindAndReplaceModal extends Modal {
 
         const rowClass = 'row';
         const divClass = 'div';
+
+        // 创建两列容器
+        const leftColumn = document.createElement(divClass);
+        leftColumn.style.display = 'flex';
+        leftColumn.style.flexDirection = 'column';
+        leftColumn.style.width = '48%';
+        leftColumn.style.marginRight = '4%';
+
+        const rightColumn = document.createElement(divClass);
+        rightColumn.style.display = 'flex';
+        rightColumn.style.flexDirection = 'column';
+        rightColumn.style.width = '48%';
+
+        // 创建容器来包裹两列
+        const toggleContainer = document.createElement(divClass);
+        toggleContainer.style.display = 'flex';
+        toggleContainer.style.flexWrap = 'wrap';
+        toggleContainer.style.width = '100%';
+        toggleContainer.appendChild(leftColumn);
+        toggleContainer.appendChild(rightColumn);
+
+        // 添加到主内容容器
+        contentEl.appendChild(toggleContainer);
         //是否未选中文字
         const noSelection: boolean = editor.getSelection() === '';
         // 初始化正则表达式标志
@@ -162,9 +185,12 @@ class FindAndReplaceModal extends Modal {
         };
 
         // 添加开关组件
-        const addToggleComponent = (label: string, tooltip: string, hide = false): [ToggleComponent, HTMLDivElement] => {
+        const addToggleComponent = (label: string, tooltip: string, hide = false, column?: HTMLElement): [ToggleComponent, HTMLDivElement] => {
             const containerEl = document.createElement(divClass);
             containerEl.addClass(rowClass);
+            containerEl.style.display = 'flex';
+            containerEl.style.alignItems = 'center';
+            containerEl.style.marginBottom = '10px';
 
             const targetEl = document.createElement(divClass);
             targetEl.addClass(rowClass);
@@ -172,30 +198,21 @@ class FindAndReplaceModal extends Modal {
             const component = new ToggleComponent(targetEl);
             component.setTooltip(tooltip);
 
-            const labelContainer = document.createElement(divClass);
-            labelContainer.style.display = 'flex';
-            labelContainer.style.alignItems = 'center';
-
             const labelEl = document.createElement(divClass);
             labelEl.addClass('check-label');
             labelEl.setText(label);
+            labelEl.style.whiteSpace = 'nowrap';
+            labelEl.style.marginRight = '8px';
 
-            const infoIcon = document.createElement('span');
-            infoIcon.setText('?');
-            infoIcon.style.marginLeft = '8px';
-            infoIcon.style.padding = '2px 6px';
-            infoIcon.style.background = '#e0e0e0';
-            infoIcon.style.borderRadius = '50%';
-            infoIcon.style.fontSize = '12px';
-            infoIcon.style.cursor = 'help';
-            infoIcon.title = tooltip;
-
-            labelContainer.appendChild(labelEl);
-            labelContainer.appendChild(infoIcon);
-
-            containerEl.appendChild(labelContainer);
+            containerEl.appendChild(labelEl);
             containerEl.appendChild(targetEl);
-            if (!hide) contentEl.appendChild(containerEl);
+            if (!hide) {
+                if (column) {
+                    column.appendChild(containerEl);
+                } else {
+                    contentEl.appendChild(containerEl);
+                }
+            }
             return [component, containerEl];
         };
 
@@ -209,34 +226,34 @@ class FindAndReplaceModal extends Modal {
         const replaceWithInputComponent = this.replaceWithInputComponent;
 
         // 创建并显示正则表达式开关
-        const regToggleRow = addToggleComponent(this.language.useRegexLabel, this.language.useRegexTooltip);
+        const regToggleRow = addToggleComponent(this.language.useRegexLabel, this.language.useRegexTooltip, false, leftColumn);
         this.regToggleComponent = regToggleRow[0];
         const regToggleComponent = this.regToggleComponent;
         // const regToggleContainer = regToggleRow[1];
 
         // 仅当有文本被选中时创建并显示选择开关
-        const selToggleRow = addToggleComponent(this.language.replaceOnlyInSelectionLabel, this.language.replaceOnlyInSelectionTooltip, noSelection);
+        const selToggleRow = addToggleComponent(this.language.replaceOnlyInSelectionLabel, this.language.replaceOnlyInSelectionTooltip, noSelection, leftColumn);
         this.selToggleComponent = selToggleRow[0];
         const selToggleComponent = this.selToggleComponent;
         // const selToggleContainer = selToggleRow[1];
 
         // 创建其他设置开关
-        const caseInsensitiveToggleRow = addToggleComponent(this.language.caseInsensitiveName, this.language.caseInsensitiveDesc);
+        const caseInsensitiveToggleRow = addToggleComponent(this.language.caseInsensitiveName, this.language.caseInsensitiveDesc, false, rightColumn);
         this.caseInsensitiveToggleComponent = caseInsensitiveToggleRow[0];
         const caseInsensitiveToggleComponent = this.caseInsensitiveToggleComponent;
         const caseInsensitiveToggleContainer = caseInsensitiveToggleRow[1];
 
-        const processLineBreakToggleRow = addToggleComponent(this.language.processLineBreakName, this.language.processLineBreakDesc);
+        const processLineBreakToggleRow = addToggleComponent(this.language.processLineBreakName, this.language.processLineBreakDesc, false, rightColumn);
         this.processLineBreakToggleComponent = processLineBreakToggleRow[0];
         const processLineBreakToggleComponent = this.processLineBreakToggleComponent;
         const processLineBreakToggleContainer = processLineBreakToggleRow[1];
 
-        const processTabToggleRow = addToggleComponent(this.language.processTabName, this.language.processTabDesc);
+        const processTabToggleRow = addToggleComponent(this.language.processTabName, this.language.processTabDesc, false, rightColumn);
         this.processTabToggleComponent = processTabToggleRow[0];
         const processTabToggleComponent = this.processTabToggleComponent;
         const processTabToggleContainer = processTabToggleRow[1];
 
-        const prefillFindToggleRow = addToggleComponent(this.language.prefillFindName, this.language.prefillFindDesc);
+        const prefillFindToggleRow = addToggleComponent(this.language.prefillFindName, this.language.prefillFindDesc, false, leftColumn);
         this.prefillFindToggleComponent = prefillFindToggleRow[0];
         const prefillFindToggleComponent = this.prefillFindToggleComponent;
         // const prefillFindToggleContainer = prefillFindToggleRow[1];
