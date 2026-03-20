@@ -20,7 +20,7 @@ const en: LanguageTranslationInterface = {
     processLineBreakName: "Process \\n as line break",
     processLineBreakDesc: "When '\\n' is used in the replace field, a 'line break' will be inserted accordingly",
     prefillFindName: "Prefill Find Field",
-    prefillFindDesc: "Copy the currently selected text (if any) into the 'Find' text field. This setting is only applied if the selection does not contain linebreaks",
+    prefillFindDesc: "When this feature is enabled, if the user selects a piece of text in the editor (and the text does not contain line breaks), the selected text will be automatically filled into the 'Find' input box when opening the find/replace dialog.",
     processTabName: "Process \\t as tab",
     processTabDesc: "When '\\t' is used in the replace field, a 'tab' will be inserted accordingly",
     langSettingName: "Choose a language",

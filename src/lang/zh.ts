@@ -21,7 +21,7 @@ const zh: LanguageTranslationInterface = {
     processLineBreakName: "将\\n处理为换行符",
     processLineBreakDesc: "当在替换字段中使用'\\n'时，将相应插入'换行符'",
     prefillFindName: "预填查找字段",
-    prefillFindDesc: "将当前选中的文本（如果有）复制到'查找'文本字段中。此设置仅在选择内容不包含换行符时应用",
+    prefillFindDesc: "当启用此功能时，如果用户在编辑器中选中了一段文本（且该文本不包含换行符），打开查找替换对话框时会自动将选中的文本填充到\"查找\"输入框中。",
     processTabName: "将\\t处理为制表符",
     processTabDesc: "当在替换字段中使用'\\t'时，将相应插入'制表符'",
     langSettingName: "选择一个语言",
