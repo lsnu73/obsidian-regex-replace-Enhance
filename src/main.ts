@@ -13,6 +13,7 @@ import {
 import { getLanguage, getLanguageOptions, languageType } from './lang';
 import SettingsInfoInterface from "./types/SettingsInfoInterface";
 import LanguageTranslationInterface from "./types/LanguageTranslationInterface";
+import HistoryItemInterface from "./types/HistoryItemInterface";
 
 
 /**
@@ -27,7 +28,9 @@ const DEFAULT_SETTINGS: SettingsInfoInterface = {
     processLineBreak: false,
     processTab: false,
     prefillFind: false,
-    language: languageType.zh
+    language: languageType.zh,
+    enableHistory: true,
+    historyLimit: 10
 }
 
 // logThreshold: 0 ... 仅错误信息
@@ -39,10 +42,12 @@ const logger = (logString: string, logLevel = 0): void => {
 
 export default class RegexFindReplacePlugin extends Plugin {
     settings: SettingsInfoInterface;
+    history: HistoryItemInterface[] = [];
 
     async onload() {
         logger('加载插件...', 9);
         await this.loadSettings();
+        await this.loadHistory();
 
         // 添加设置选项卡
         this.addSettingTab(new RegexFindReplaceSettingTab(this.app, this));
@@ -63,8 +68,14 @@ export default class RegexFindReplacePlugin extends Plugin {
 
     async loadSettings() {
         logger('加载设置...', 6);
-        // 合并默认设置和保存的设置
-        this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+        // 合并默认设置和保存的设置，排除 history 字段
+        const savedData = await this.loadData();
+        if (savedData) {
+            const { history, ...settingsData } = savedData;
+            this.settings = Object.assign({}, DEFAULT_SETTINGS, settingsData);
+        } else {
+            this.settings = { ...DEFAULT_SETTINGS };
+        }
         logger('   findVal:         ' + this.settings.findText, 6);
         logger('   replaceText:     ' + this.settings.replaceText, 6);
         logger('   caseInsensitive: ' + this.settings.caseInsensitive, 6);
@@ -73,14 +84,61 @@ export default class RegexFindReplacePlugin extends Plugin {
     }
 
     async saveSettings() {
-        // 保存设置到磁盘
-        await this.saveData(this.settings);
+        // 保存设置到磁盘，保留历史记录
+        const currentData = await this.loadData();
+        await this.saveData({
+            ...currentData,
+            ...this.settings
+        });
+    }
+
+    async loadHistory() {
+        logger('加载历史记录...', 6);
+        const savedData = await this.loadData();
+        if (savedData && Array.isArray(savedData.history)) {
+            this.history = savedData.history;
+            logger('   加载了 ' + this.history.length + ' 条历史记录', 6);
+        }
+    }
+
+    async saveHistory() {
+        logger('保存历史记录...', 6);
+        const currentData = await this.loadData();
+        await this.saveData({
+            ...currentData,
+            history: this.history
+        });
+    }
+
+    async addToHistory(item: HistoryItemInterface) {
+        if (!this.settings.enableHistory) return;
+
+        // 移除重复项
+        this.history = this.history.filter(h =>
+            h.findText !== item.findText ||
+            h.replaceText !== item.replaceText ||
+            h.useRegEx !== item.useRegEx
+        );
+
+        // 添加到历史记录开头
+        this.history.unshift(item);
+
+        // 限制历史记录数量
+        if (this.history.length > this.settings.historyLimit) {
+            this.history = this.history.slice(0, this.settings.historyLimit);
+        }
+
+        await this.saveHistory();
+    }
+
+    getHistory() {
+        return this.history;
     }
 
 }
 
 class FindAndReplaceModal extends Modal {
-    constructor(app: App, editor: Editor, settings: SettingsInfoInterface, plugin: Plugin) {
+    constructor(app: App, editor: Editor, settings: SettingsInfoInterface, plugin: RegexFindReplacePlugin) {
         super(app);
         this.editor = editor;
         this.settings = settings;
@@ -90,7 +148,7 @@ class FindAndReplaceModal extends Modal {
 
     settings: SettingsInfoInterface;
     editor: Editor;
-    plugin: Plugin;
+    plugin: RegexFindReplacePlugin;
     language: LanguageTranslationInterface;
 
     // 存储组件引用，用于在onClose中保存设置
@@ -387,6 +445,20 @@ class FindAndReplaceModal extends Modal {
             // 保存设置（查找/替换文本和开关状态）
             this.saveSettings(findInputComponent, replaceWithInputComponent, regToggleComponent, selToggleComponent, caseInsensitiveToggleComponent, processLineBreakToggleComponent, processTabToggleComponent, prefillFindToggleComponent);
 
+            // 添加到历史记录
+            if (this.settings.enableHistory) {
+                const historyItem: HistoryItemInterface = {
+                    findText: findInputComponent.getValue(),
+                    replaceText: replaceWithInputComponent.getValue(),
+                    useRegEx: regToggleComponent.getValue(),
+                    caseInsensitive: caseInsensitiveToggleComponent.getValue(),
+                    processLineBreak: processLineBreakToggleComponent.getValue(),
+                    processTab: processTabToggleComponent.getValue(),
+                    timestamp: Date.now()
+                };
+                this.plugin.addToHistory(historyItem);
+            }
+
             this.close();
             new Notice(resultString);
         });
@@ -419,6 +491,132 @@ class FindAndReplaceModal extends Modal {
         } else {
             logger('恢复查找文本', 9);
             findInputComponent.setValue(this.settings.findText);
+        }
+
+        // 添加历史记录区域
+        if (this.settings.enableHistory) {
+            const historyContainer = document.createElement(divClass);
+            historyContainer.style.marginTop = '20px';
+
+            const historyTitle = document.createElement('h5');
+            historyTitle.setText(this.language.historyTitle);
+            historyContainer.appendChild(historyTitle);
+
+            const historyList = document.createElement('div');
+            historyList.style.maxHeight = '200px';
+            historyList.style.overflowY = 'auto';
+            historyList.style.border = '1px solid var(--background-modifier-border)';
+            historyList.style.borderRadius = '4px';
+            historyList.style.padding = '5px';
+
+            const historyItems = this.plugin.getHistory();
+            if (historyItems.length > 0) {
+                historyItems.forEach((item, index) => {
+                    const historyItem = document.createElement('div');
+                    historyItem.style.padding = '8px';
+                    historyItem.style.borderBottom = '1px solid var(--background-modifier-border)';
+                    historyItem.style.cursor = 'pointer';
+                    historyItem.style.transition = 'background-color 0.3s ease';
+                    historyItem.style.display = 'flex';
+                    historyItem.style.alignItems = 'center';
+                    historyItem.style.justifyContent = 'space-between';
+                    historyItem.style.flexWrap = 'wrap';
+
+                    const contentContainer = document.createElement('div');
+                    contentContainer.style.display = 'flex';
+                    contentContainer.style.alignItems = 'center';
+                    contentContainer.style.flex = '1';
+                    contentContainer.style.minWidth = '0';
+
+                    const findText = document.createElement('span');
+                    findText.style.fontSize = '12px';
+                    findText.style.color = 'var(--text-muted)';
+                    findText.style.marginRight = '10px';
+                    findText.setText(this.language.findLabel + ' ' + item.findText);
+
+                    const arrow = document.createElement('span');
+                    arrow.style.fontSize = '12px';
+                    arrow.style.color = 'var(--text-faint)';
+                    arrow.style.marginRight = '10px';
+                    arrow.setText('→');
+
+                    const replaceText = document.createElement('span');
+                    replaceText.style.fontSize = '12px';
+                    replaceText.style.color = 'var(--text-muted)';
+                    replaceText.setText(this.language.replaceLabel + ' ' + item.replaceText);
+
+                    const dateText = document.createElement('span');
+                    dateText.style.fontSize = '10px';
+                    dateText.style.color = 'var(--text-faint)';
+                    dateText.style.marginLeft = '15px';
+
+                    // 格式化日期
+                    const date = new Date(item.timestamp);
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const hours = String(date.getHours()).padStart(2, '0');
+                    const minutes = String(date.getMinutes()).padStart(2, '0');
+                    const seconds = String(date.getSeconds()).padStart(2, '0');
+                    dateText.setText(`${year}-${month}-${day} ${hours}:${minutes}:${seconds}`);
+
+                    contentContainer.appendChild(findText);
+                    contentContainer.appendChild(arrow);
+                    contentContainer.appendChild(replaceText);
+
+                    historyItem.appendChild(contentContainer);
+                    historyItem.appendChild(dateText);
+
+                    historyItem.addEventListener('click', () => {
+                        // 填充历史记录到输入字段
+                        findInputComponent.setValue(item.findText);
+                        replaceWithInputComponent.setValue(item.replaceText);
+                        regToggleComponent.setValue(item.useRegEx);
+                        caseInsensitiveToggleComponent.setValue(item.caseInsensitive);
+                        processLineBreakToggleComponent.setValue(item.processLineBreak);
+                        processTabToggleComponent.setValue(item.processTab);
+
+                        // 更新正则标志
+                        regexFlags = 'gm';
+                        if (item.caseInsensitive) regexFlags = regexFlags.concat('i');
+                        if (item.useRegEx) {
+                            findRegexFlags.setText('/' + regexFlags);
+                            caseInsensitiveToggleContainer.style.display = 'flex';
+                            processLineBreakToggleContainer.style.display = 'flex';
+                            processTabToggleContainer.style.display = 'flex';
+                        } else {
+                            findRegexFlags.setText('');
+                            caseInsensitiveToggleContainer.style.display = 'none';
+                            processLineBreakToggleContainer.style.display = 'none';
+                            processTabToggleContainer.style.display = 'none';
+                        }
+
+                        // 更新替换字段后缀标签
+                        replaceRow[1].setText(item.processLineBreak ? '\n=LF' : '');
+                    });
+
+                    // 添加鼠标悬停效果
+                    historyItem.addEventListener('mouseenter', () => {
+                        historyItem.style.backgroundColor = 'var(--background-modifier-hover)';
+                    });
+
+                    historyItem.addEventListener('mouseleave', () => {
+                        historyItem.style.backgroundColor = 'transparent';
+                    });
+
+                    historyList.appendChild(historyItem);
+                });
+            } else {
+                const noHistory = document.createElement('div');
+                noHistory.style.padding = '10px';
+                noHistory.style.textAlign = 'center';
+                noHistory.style.color = 'var(--text-muted)';
+                noHistory.setText(this.language.noHistoryMessage);
+                historyList.appendChild(noHistory);
+            }
+
+            historyContainer.appendChild(historyList);
+            contentEl.appendChild(historyContainer);
         }
 
         // 添加按钮行到对话框
@@ -472,6 +670,35 @@ class RegexFindReplaceSettingTab extends PluginSettingTab {
                         this.plugin.settings.language = value as languageType;
                         await this.plugin.saveSettings();
                         this.display();
+                    });
+            });
+
+        // 是否开启历史记录
+        new Setting(containerEl)
+            .setName(currentLanguage.enableHistoryName)
+            .setDesc(currentLanguage.enableHistoryDesc)
+            .addToggle(toggle => {
+                toggle.setValue(this.plugin.settings.enableHistory)
+                    .onChange(async (value) => {
+                        logger('Settings update: enableHistory: ' + value);
+                        this.plugin.settings.enableHistory = value;
+                        await this.plugin.saveSettings();
+                    });
+            });
+
+        // 历史记录数量限制
+        new Setting(containerEl)
+            .setName(currentLanguage.historyLimitName)
+            .setDesc(currentLanguage.historyLimitDesc)
+            .addText(text => {
+                text.setValue(this.plugin.settings.historyLimit.toString())
+                    .onChange(async (value) => {
+                        const limit = parseInt(value);
+                        if (!isNaN(limit) && limit > 0) {
+                            logger('Settings update: historyLimit: ' + limit);
+                            this.plugin.settings.historyLimit = limit;
+                            await this.plugin.saveSettings();
+                        }
                     });
             });
     }

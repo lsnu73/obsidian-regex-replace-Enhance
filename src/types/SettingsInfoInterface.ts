@@ -25,11 +25,11 @@ export default interface SettingsInfoInterface {
      */
     caseInsensitive: boolean;
     /**
-     * 是否将\\n处理为换行符
+     * 是否将\n处理为换行符
      */
     processLineBreak: boolean;
     /**
-     * 是否将\\t处理为制表符
+     * 是否将\t处理为制表符
      */
     processTab: boolean;
     /**
@@ -40,4 +40,12 @@ export default interface SettingsInfoInterface {
      * 语言类型
      */
     language: languageType;
+    /**
+     * 是否开启历史记录
+     */
+    enableHistory: boolean;
+    /**
+     * 历史记录数量限制
+     */
+    historyLimit: number;
 }

@@ -24,6 +24,12 @@ const en: LanguageTranslationInterface = {
     processTabName: "Process \\t as tab",
     processTabDesc: "When '\\t' is used in the replace field, a 'tab' will be inserted accordingly",
     langSettingName: "Choose a language",
-    langSettingDesc: "Select the language for the plugin"
+    langSettingDesc: "Select the language for the plugin",
+    enableHistoryName: "Enable history",
+    enableHistoryDesc: "If enabled, the plugin will save a history of find/replace operations",
+    historyLimitName: "History limit",
+    historyLimitDesc: "Maximum number of history records to keep",
+    historyTitle: "History",
+    noHistoryMessage: "No history records"
 }
 export default en;

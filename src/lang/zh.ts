@@ -26,6 +26,11 @@ const zh: LanguageTranslationInterface = {
     processTabDesc: "当在替换字段中使用'\\t'时，将相应插入'制表符'",
     langSettingName: "选择一个语言",
     langSettingDesc: "选择插件的语言，影响插件的界面和功能",
-
+    enableHistoryName: "是否开启历史记录",
+    enableHistoryDesc: "如果开启，插件将保存查找/替换操作的历史记录",
+    historyLimitName: "历史记录数量限制",
+    historyLimitDesc: "最多保存的历史记录数量",
+    historyTitle: "历史记录",
+    noHistoryMessage: "暂无历史记录"
 }
 export default zh;

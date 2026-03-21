@@ -110,6 +110,30 @@ interface LanguageTranslationInterface {
    * 语言选项描述
    */
   langSettingDesc: string;
+  /**
+   * 是否开启历史记录标签
+   */
+  enableHistoryName: string;
+  /**
+   * 是否开启历史记录描述
+   */
+  enableHistoryDesc: string;
+  /**
+   * 历史记录数量限制标签
+   */
+  historyLimitName: string;
+  /**
+   * 历史记录数量限制描述
+   */
+  historyLimitDesc: string;
+  /**
+   * 历史记录标题
+   */
+  historyTitle: string;
+  /**
+   * 无历史记录提示
+   */
+  noHistoryMessage: string;
 
 }
 export default LanguageTranslationInterface 
