@@ -55,7 +55,7 @@ export default class RegexFindReplacePlugin extends Plugin {
         // 添加命令，用于打开查找替换模态框
         this.addCommand({
             id: 'Regex Find & Replace(Enhance)',
-            name: getLanguage(this.settings.language).commandName,
+            name: "Regex search and replace text",
             editorCallback: (editor) => {
                 new FindAndReplaceModal(this.app, editor, this.settings, this).open();
             },
@@ -184,7 +184,7 @@ class FindAndReplaceModal extends Modal {
 
         const rowClass = 'row';
         const divClass = 'div';
-
+        //--------------- 顶部选项栏 ---------------------
         // 创建两列容器
         const leftColumn = document.createElement(divClass);
         leftColumn.style.display = 'flex';
@@ -214,36 +214,41 @@ class FindAndReplaceModal extends Modal {
         if (this.settings.caseInsensitive) regexFlags = regexFlags.concat('i');
 
         logger('是否未选择文本?: ' + noSelection, 9);
-
+        // -------------------中部输入框-----------------------------
         // 添加文本输入组件
-        const addTextComponent = (label: string, placeholder: string, postfix = ''): [TextComponent, HTMLDivElement] => {
+        const addTextComponent = (label: string, postfix = ''): [TextComponent, HTMLDivElement] => {
             const containerEl = document.createElement(divClass);
             containerEl.addClass(rowClass);
+            // 中间输入框容器
+            const inputEl = document.createElement(divClass);
+            inputEl.addClass('input-wrapper');
+            inputEl.style.flex = '7';
+            // 左侧文字标签
+            const textEL = document.createElement(divClass);
+            textEL.addClass('input-label');
+            textEL.setText(label);
+            textEL.style.flex = '2';
+            textEL.style.justifyContent = 'space-around';
+            // 右侧后缀标签
+            const postfixEL = document.createElement(divClass);
+            postfixEL.addClass('postfix-label');
+            postfixEL.setText(postfix);
+            postfixEL.style.width = 'auto';
+            postfixEL.style.flex = '1';
 
-            const targetEl = document.createElement(divClass);
-            targetEl.addClass('input-wrapper');
+            containerEl.appendChild(textEL);
+            containerEl.appendChild(inputEl);
+            containerEl.appendChild(postfixEL);
 
-            const labelEl = document.createElement(divClass);
-            labelEl.addClass('input-label');
-            labelEl.setText(label);
-
-            const labelEl2 = document.createElement(divClass);
-            labelEl2.addClass('postfix-label');
-            labelEl2.setText(postfix);
-
-            containerEl.appendChild(labelEl);
-            containerEl.appendChild(targetEl);
-            containerEl.appendChild(labelEl2);
-
-            const component = new TextComponent(targetEl);
-            component.setPlaceholder(placeholder);
+            const component = new TextComponent(inputEl);
 
             contentEl.append(containerEl);
-            return [component, labelEl2];
+            return [component, postfixEL];
         };
 
         // 添加开关组件
         const addToggleComponent = (label: string, tooltip: string, hide = false, column?: HTMLElement): [ToggleComponent, HTMLDivElement] => {
+            // 创建容器包围文字、开关
             const containerEl = document.createElement(divClass);
             containerEl.addClass(rowClass);
             containerEl.style.display = 'flex';
@@ -252,20 +257,23 @@ class FindAndReplaceModal extends Modal {
             containerEl.style.width = '100%';
             containerEl.style.marginTop = "0";
             containerEl.style.justifyContent = 'space-between';
-
-            const targetEl = document.createElement(divClass);
-            targetEl.addClass(rowClass);
-            targetEl.style.marginTop = "0";
-            const component = new ToggleComponent(targetEl);
+            // 创建右边开关容器
+            const toggleSwitch = document.createElement(divClass);
+            toggleSwitch.addClass(rowClass);
+            toggleSwitch.style.width = 'auto';
+            toggleSwitch.style.marginTop = "0";
+            const component = new ToggleComponent(toggleSwitch);
+            // 添加开关悬浮提示
             component.setTooltip(tooltip);
-
+            // 创建左边文字容器
             const labelEl = document.createElement(divClass);
             labelEl.addClass('check-label');
             labelEl.setText(label);
+            labelEl.style.width = 'auto';
             labelEl.style.whiteSpace = 'nowrap';
 
             containerEl.appendChild(labelEl);
-            containerEl.appendChild(targetEl);
+            containerEl.appendChild(toggleSwitch);
             if (!hide) {
                 if (column) {
                     column.appendChild(containerEl);
@@ -277,11 +285,11 @@ class FindAndReplaceModal extends Modal {
         };
 
         // 创建输入字段
-        const findRow = addTextComponent(this.language.findLabel, '例如: (.*)', '/' + regexFlags);
+        const findRow = addTextComponent(this.language.findLabel, '/' + regexFlags);
         this.findInputComponent = findRow[0];
         const findInputComponent = this.findInputComponent;
         const findRegexFlags = findRow[1];
-        const replaceRow = addTextComponent(this.language.replaceLabel, '例如: $1', this.settings.processLineBreak ? '\n=LF' : '');
+        const replaceRow = addTextComponent(this.language.replaceLabel, this.settings.processLineBreak ? '\n=LF' : '');
         this.replaceWithInputComponent = replaceRow[0];
         const replaceWithInputComponent = this.replaceWithInputComponent;
 
@@ -318,6 +326,7 @@ class FindAndReplaceModal extends Modal {
         const prefillFindToggleComponent = this.prefillFindToggleComponent;
         // const prefillFindToggleContainer = prefillFindToggleRow[1];
 
+
         // 当正则表达式启用或禁用时更新正则标志标签
         regToggleComponent.onChange(regNew => {
             if (regNew) {
@@ -349,6 +358,7 @@ class FindAndReplaceModal extends Modal {
             replaceRow[1].setText(processLineBreakNew ? '\\n=LF' : '');
         })
 
+        // -----------------------底部按钮-----------------------
         // 创建按钮
         const buttonContainerEl = document.createElement(divClass);
         buttonContainerEl.addClass(rowClass);

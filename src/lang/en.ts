@@ -31,6 +31,5 @@ const en: LanguageTranslationInterface = {
     historyLimitDesc: "Maximum number of history records to keep",
     historyTitle: "History",
     noHistoryMessage: "No history records",
-    commandName: "Use regular expressions to find and replace"
 }
 export default en;

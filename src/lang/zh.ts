@@ -32,6 +32,5 @@ const zh: LanguageTranslationInterface = {
     historyLimitDesc: "最多保存的历史记录数量",
     historyTitle: "历史记录",
     noHistoryMessage: "暂无历史记录",
-    commandName: "使用正则表达式查找和替换"
 }
 export default zh;

@@ -134,10 +134,6 @@ interface LanguageTranslationInterface {
    * 无历史记录提示
    */
   noHistoryMessage: string;
-  /**
-   * 命令名称
-   */
-  commandName: string;
 
 }
 export default LanguageTranslationInterface 
