@@ -10,7 +10,7 @@ import {
     TextComponent,
     ToggleComponent
 } from 'obsidian';
-import {getLanguage, getLanguageOptions, languageType} from './lang';
+import { getLanguage, getLanguageOptions, languageType } from './lang';
 import SettingsInfoInterface from "./types/SettingsInfoInterface";
 import LanguageTranslationInterface from "./types/LanguageTranslationInterface";
 import HistoryItemInterface from "./types/HistoryItemInterface";
@@ -54,8 +54,8 @@ export default class RegexFindReplacePlugin extends Plugin {
 
         // 添加命令，用于打开查找替换模态框
         this.addCommand({
-            id: 'obsidian-regex-replace',
-            name: '使用正则表达式查找和替换',
+            id: 'Regex Find & Replace(Enhance)',
+            name: getLanguage(this.settings.language).commandName,
             editorCallback: (editor) => {
                 new FindAndReplaceModal(this.app, editor, this.settings, this).open();
             },
@@ -71,10 +71,10 @@ export default class RegexFindReplacePlugin extends Plugin {
         // 合并默认设置和保存的设置，排除 history 字段
         const savedData = await this.loadData();
         if (savedData) {
-            const {...settingsData} = savedData;
+            const { ...settingsData } = savedData;
             this.settings = Object.assign({}, DEFAULT_SETTINGS, settingsData);
         } else {
-            this.settings = {...DEFAULT_SETTINGS};
+            this.settings = { ...DEFAULT_SETTINGS };
         }
         logger('   findVal:         ' + this.settings.findText, 6);
         logger('   replaceText:     ' + this.settings.replaceText, 6);
@@ -177,7 +177,7 @@ class FindAndReplaceModal extends Modal {
     }
 
     onOpen() {
-        const {contentEl, titleEl, editor, modalEl} = this;
+        const { contentEl, titleEl, editor, modalEl } = this;
 
         modalEl.addClass('find-replace-modal');
         titleEl.setText(this.language.modalTitle);
@@ -635,7 +635,7 @@ class FindAndReplaceModal extends Modal {
         if (this.findInputComponent && this.replaceWithInputComponent && this.regToggleComponent && this.selToggleComponent && this.caseInsensitiveToggleComponent && this.processLineBreakToggleComponent && this.processTabToggleComponent && this.prefillFindToggleComponent) {
             this.saveSettings(this.findInputComponent, this.replaceWithInputComponent, this.regToggleComponent, this.selToggleComponent, this.caseInsensitiveToggleComponent, this.processLineBreakToggleComponent, this.processTabToggleComponent, this.prefillFindToggleComponent);
         }
-        const {contentEl} = this;
+        const { contentEl } = this;
         contentEl.empty();
     }
 }
@@ -649,13 +649,13 @@ class RegexFindReplaceSettingTab extends PluginSettingTab {
     }
 
     display(): void {
-        const {containerEl} = this;
+        const { containerEl } = this;
         containerEl.empty();
 
         // Get current language
         const currentLanguage = getLanguage(this.plugin.settings.language);
 
-        containerEl.createEl('h4', {text: currentLanguage.generalSettingsTitle});
+        containerEl.createEl('h4', { text: currentLanguage.generalSettingsTitle });
 
         // 设置语言
         const languageOptions = getLanguageOptions();

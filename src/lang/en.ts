@@ -1,6 +1,6 @@
 import LanguageTranslationInterface from "../types/LanguageTranslationInterface";
 const en: LanguageTranslationInterface = {
-    modalTitle: "Regex Find/Replace Enhance",
+    modalTitle: "Regex Find & Replace(Enhance)",
     findLabel: "Find:",
     replaceLabel: "Replace:",
     useRegexLabel: "Use regular expressions",
@@ -30,6 +30,7 @@ const en: LanguageTranslationInterface = {
     historyLimitName: "History limit",
     historyLimitDesc: "Maximum number of history records to keep",
     historyTitle: "History",
-    noHistoryMessage: "No history records"
+    noHistoryMessage: "No history records",
+    commandName: "Use regular expressions to find and replace"
 }
 export default en;

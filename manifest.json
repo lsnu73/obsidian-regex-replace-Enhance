@@ -2,9 +2,9 @@
 	"author": "wanghairui",
 	"authorUrl": "https://github.com/lsnu73",
 	"description": "对 obsidian-regex-replace 的增强。在正则表达式替换当前编辑器中的文本基础上，增加中英文切换、保留历史记录",
-	"id": "obsidian-regex-replace-Enhance",
+	"id": "Regex Find & Replace(Enhance)",
 	"isDesktopOnly": false,
 	"minAppVersion": "0.12.17",
-	"name": "Regex Find&Replace(Enhance)",
+	"name": "Regex Find & Replace(Enhance)",
 	"version": "1.3.0"
 }
