@@ -1,6 +1,8 @@
 # Obsidian 插件 - 正则查找替换（增强版）
-本插件基于 [Gru80/obsidian-regex-replace](https://github.com/Gru80/obsidian-regex-replace) 项目开发，在其基础上进行了功能增强。
+>本插件基于 [Gru80/obsidian-regex-replace](https://github.com/Gru80/obsidian-regex-replace) 项目开发，在其基础上进行了功能增强。
 
+
+>英文文档：[English document](README-en.md)
 ## 功能
 
 ### 原有功能
