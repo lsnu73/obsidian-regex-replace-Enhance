@@ -10,7 +10,7 @@ import {
     TextComponent,
     ToggleComponent
 } from 'obsidian';
-import { getLanguage, getLanguageOptions, languageType } from './lang';
+import {getLanguage, getLanguageOptions, languageType} from './lang';
 import SettingsInfoInterface from "./types/SettingsInfoInterface";
 import LanguageTranslationInterface from "./types/LanguageTranslationInterface";
 import HistoryItemInterface from "./types/HistoryItemInterface";
@@ -71,10 +71,10 @@ export default class RegexFindReplacePlugin extends Plugin {
         // 合并默认设置和保存的设置，排除 history 字段
         const savedData = await this.loadData();
         if (savedData) {
-            const { history, ...settingsData } = savedData;
+            const {...settingsData} = savedData;
             this.settings = Object.assign({}, DEFAULT_SETTINGS, settingsData);
         } else {
-            this.settings = { ...DEFAULT_SETTINGS };
+            this.settings = {...DEFAULT_SETTINGS};
         }
         logger('   findVal:         ' + this.settings.findText, 6);
         logger('   replaceText:     ' + this.settings.replaceText, 6);
@@ -177,7 +177,7 @@ class FindAndReplaceModal extends Modal {
     }
 
     onOpen() {
-        const { contentEl, titleEl, editor, modalEl } = this;
+        const {contentEl, titleEl, editor, modalEl} = this;
 
         modalEl.addClass('find-replace-modal');
         titleEl.setText(this.language.modalTitle);
@@ -249,10 +249,13 @@ class FindAndReplaceModal extends Modal {
             containerEl.style.display = 'flex';
             containerEl.style.alignItems = 'center';
             containerEl.style.marginBottom = '10px';
+            containerEl.style.width = '100%';
+            containerEl.style.marginTop = "0";
+            containerEl.style.justifyContent = 'space-between';
 
             const targetEl = document.createElement(divClass);
             targetEl.addClass(rowClass);
-
+            targetEl.style.marginTop = "0";
             const component = new ToggleComponent(targetEl);
             component.setTooltip(tooltip);
 
@@ -260,7 +263,6 @@ class FindAndReplaceModal extends Modal {
             labelEl.addClass('check-label');
             labelEl.setText(label);
             labelEl.style.whiteSpace = 'nowrap';
-            labelEl.style.marginRight = '8px';
 
             containerEl.appendChild(labelEl);
             containerEl.appendChild(targetEl);
@@ -633,7 +635,7 @@ class FindAndReplaceModal extends Modal {
         if (this.findInputComponent && this.replaceWithInputComponent && this.regToggleComponent && this.selToggleComponent && this.caseInsensitiveToggleComponent && this.processLineBreakToggleComponent && this.processTabToggleComponent && this.prefillFindToggleComponent) {
             this.saveSettings(this.findInputComponent, this.replaceWithInputComponent, this.regToggleComponent, this.selToggleComponent, this.caseInsensitiveToggleComponent, this.processLineBreakToggleComponent, this.processTabToggleComponent, this.prefillFindToggleComponent);
         }
-        const { contentEl } = this;
+        const {contentEl} = this;
         contentEl.empty();
     }
 }
@@ -647,13 +649,13 @@ class RegexFindReplaceSettingTab extends PluginSettingTab {
     }
 
     display(): void {
-        const { containerEl } = this;
+        const {containerEl} = this;
         containerEl.empty();
 
         // Get current language
         const currentLanguage = getLanguage(this.plugin.settings.language);
 
-        containerEl.createEl('h4', { text: currentLanguage.generalSettingsTitle });
+        containerEl.createEl('h4', {text: currentLanguage.generalSettingsTitle});
 
         // 设置语言
         const languageOptions = getLanguageOptions();

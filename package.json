@@ -1,7 +1,7 @@
 {
-	"name": "obsidian-regex-replace",
+	"name": "obsidian-regex-replace-enhance",
 	"version": "1.2.0",
-	"description": "An Obsidian plugin, which allows to replace text in the current editor using regular expressions.",
+	"description": "对 obsidian-regex-replace 的增强。在正则表达式替换当前编辑器中的文本基础上，增加中英文切换、保留历史记录",
 	"main": "build/main.js",
 	"scripts": {
 		"dev": "rollup --config rollup.config.js -w",
