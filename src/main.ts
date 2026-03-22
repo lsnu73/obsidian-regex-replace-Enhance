@@ -414,8 +414,14 @@ class FindAndReplaceModal extends Modal {
             // 检查是否应该使用正则表达式
             if (regToggleComponent.getValue()) {
                 logger('使用正则表达式，标志: ' + regexFlags, 8);
-
-                const searchRegex = new RegExp(searchString, regexFlags);
+                let searchRegex: RegExp;
+                try {
+                    searchRegex = new RegExp(searchString, regexFlags);
+                } catch (error) {
+                    const notice: Notice = new Notice(this.language.invalidRegex);
+                    notice.messageEl.style.color = 'red';
+                    return;
+                }
                 if (!selToggleComponent.getValue()) {
                     logger('   范围: 整个文档', 9);
                     const documentText = editor.getValue();

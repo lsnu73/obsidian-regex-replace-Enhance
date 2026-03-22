@@ -3,14 +3,6 @@
  */
 interface LanguageTranslationInterface {
   /**
-   * 插件名称
-   */
-  // pluginName: string;
-  /**
-   * 插件描述
-   */
-  // pluginDesc: string;
-  /**
    * 插件弹窗标题
    */
   modalTitle: string;
@@ -54,6 +46,10 @@ interface LanguageTranslationInterface {
    * 替换结果标签
    */
   replacementResult: string;
+  /**
+   * 无效正则表达式
+   */
+  invalidRegex: string,
   /**
    * 查找范围标签
    */

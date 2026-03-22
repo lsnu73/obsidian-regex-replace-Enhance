@@ -11,6 +11,7 @@ const en: LanguageTranslationInterface = {
     replaceAllButton: "Replace All",
     nothingToSearchFor: "Nothing to search for!",
     replacementResult: "Made {{count}} replacement(s) in {{scope}}",
+    invalidRegex: "Invalid regular expression",
     scopeDocument: "document",
     scopeSelection: "selection",
     settingsTitle: "Regular Expression Settings",

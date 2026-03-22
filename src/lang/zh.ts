@@ -12,6 +12,7 @@ const zh: LanguageTranslationInterface = {
     replaceAllButton: "全部替换",
     nothingToSearchFor: "没有要搜索的内容！",
     replacementResult: "在{{scope}}中进行了{{count}}次替换",
+    invalidRegex: "无效的正则表达式",
     scopeDocument: "文档",
     scopeSelection: "选择内容",
     settingsTitle: "正则表达式设置",

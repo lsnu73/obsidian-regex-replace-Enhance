@@ -31,7 +31,8 @@ export const getLanguage = (lang: languageType) => {
  */
 export const getLanguageOptions: () => Array<{ code: languageType, name: string }> = () => {
     return Object.entries(languages).map(([code, translation]) => ({
-        code, name: code
+        code: code as languageType,
+        name: code
     }));
 };
 
